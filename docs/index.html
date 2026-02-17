@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GHG Calculator — Open Source Emissions Intelligence</title>
+    <meta name="description" content="Calculate greenhouse gas emissions across all 3 scopes with 967 embedded emission factors. Free, open source, works as a Claude Code skill.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --green-dark: #0D1F0D;
+            --green-deep: #1B3A1B;
+            --green-primary: #2D6A2D;
+            --green-mid: #3D8B3D;
+            --green-bright: #4CAF50;
+            --green-light: #81C784;
+            --green-pale: #A5D6A7;
+            --accent-emerald: #00897B;
+            --accent-gold: #C6A700;
+            --black: #08080A;
+            --charcoal: #141416;
+            --surface: #1A1A1E;
+            --surface-light: #222226;
+            --gray-mid: #555;
+            --gray-light: #888;
+            --cream: #F0F0EA;
+            --cream-dim: #B8B8B0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--black);
+            color: var(--cream);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* ── Nav ─────────────────────────────── */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(8,8,10,0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(76,175,80,0.08);
+        }
+        .nav-brand {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--cream);
+            letter-spacing: -0.02em;
+        }
+        .nav-brand span { color: var(--green-bright); }
+        .nav-links {
+            display: flex;
+            gap: 28px;
+            align-items: center;
+        }
+        .nav-links a {
+            font-size: 0.85rem;
+            color: var(--cream-dim);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: var(--green-bright); }
+        .nav-links .btn-nav {
+            color: var(--black);
+            background: var(--green-bright);
+            padding: 6px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: background 0.2s;
+        }
+        .nav-links .btn-nav:hover { background: var(--green-light); }
+
+        /* ── Hero ─────────────────────────────── */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 120px 24px 80px;
+            position: relative;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background:
+                radial-gradient(ellipse at 30% 30%, rgba(76,175,80,0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 70%, rgba(0,137,123,0.04) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        .hero-eyebrow {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--green-bright);
+            margin-bottom: 20px;
+        }
+        .hero h1 {
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(2.5rem, 7vw, 5rem);
+            font-weight: 700;
+            letter-spacing: -0.04em;
+            line-height: 1.05;
+            max-width: 900px;
+            margin-bottom: 24px;
+        }
+        .hero h1 .gradient {
+            background: linear-gradient(135deg, var(--green-bright), var(--green-light), var(--accent-emerald));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero p {
+            font-size: 1.15rem;
+            color: var(--cream-dim);
+            max-width: 600px;
+            margin-bottom: 40px;
+            line-height: 1.7;
+        }
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+        }
+        .btn-primary {
+            background: var(--green-bright);
+            color: var(--black);
+        }
+        .btn-primary:hover {
+            background: var(--green-light);
+            transform: translateY(-1px);
+        }
+        .btn-secondary {
+            background: transparent;
+            color: var(--cream);
+            border: 1px solid rgba(76,175,80,0.3);
+        }
+        .btn-secondary:hover {
+            border-color: var(--green-bright);
+            background: rgba(76,175,80,0.05);
+        }
+        .hero-stats {
+            display: flex;
+            gap: 48px;
+            margin-top: 64px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .stat {
+            text-align: center;
+        }
+        .stat-value {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--green-bright);
+        }
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--gray-light);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+
+        /* ── Install Section ──────────────────── */
+        .install {
+            padding: 100px 24px;
+            text-align: center;
+        }
+        .install h2 {
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: 16px;
+        }
+        .install .lead {
+            font-size: 1.05rem;
+            color: var(--cream-dim);
+            max-width: 550px;
+            margin: 0 auto 48px;
+        }
+        .install-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            max-width: 960px;
+            margin: 0 auto;
+        }
+        .step {
+            background: var(--surface);
+            border: 1px solid rgba(76,175,80,0.1);
+            border-radius: 12px;
+            padding: 32px 28px;
+            text-align: left;
+        }
+        .step-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--green-deep);
+            margin-bottom: 12px;
+        }
+        .step h3 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        .step p {
+            font-size: 0.9rem;
+            color: var(--cream-dim);
+            margin-bottom: 16px;
+        }
+        .code-block {
+            background: var(--charcoal);
+            border: 1px solid rgba(76,175,80,0.1);
+            border-radius: 8px;
+            padding: 14px 18px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            color: var(--green-light);
+            overflow-x: auto;
+            position: relative;
+            line-height: 1.6;
+        }
+        .code-block .comment { color: var(--gray-mid); }
+        .code-block .cmd { color: var(--cream); }
+
+        /* ── Skill Section ────────────────────── */
+        .skill {
+            padding: 100px 24px;
+            background: linear-gradient(180deg, transparent, rgba(13,31,13,0.3), transparent);
+        }
+        .skill h2 {
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        .skill .lead {
+            font-size: 1.05rem;
+            color: var(--cream-dim);
+            max-width: 550px;
+            margin: 0 auto 48px;
+            text-align: center;
+        }
+        .skill-demo {
+            max-width: 720px;
+            margin: 0 auto;
+        }
+        .skill-prompt {
+            background: var(--surface);
+            border: 1px solid rgba(76,175,80,0.15);
+            border-radius: 12px;
+            padding: 24px 28px;
+            margin-bottom: 16px;
+            transition: border-color 0.2s;
+        }
+        .skill-prompt:hover {
+            border-color: rgba(76,175,80,0.35);
+        }
+        .skill-prompt .cmd-line {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+        .skill-prompt .cmd-slash {
+            color: var(--green-bright);
+            font-weight: 600;
+        }
+        .skill-prompt .cmd-text {
+            color: var(--cream-dim);
+        }
+        .skill-prompt .cmd-desc {
+            display: block;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            color: var(--gray-light);
+            margin-top: 8px;
+        }
+
+        /* ── Features ─────────────────────────── */
+        .features {
+            padding: 100px 24px;
+        }
+        .features h2 {
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            text-align: center;
+            margin-bottom: 56px;
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            max-width: 1080px;
+            margin: 0 auto;
+        }
+        .feature {
+            background: var(--surface);
+            border: 1px solid rgba(76,175,80,0.08);
+            border-radius: 12px;
+            padding: 28px 24px;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+        .feature:hover {
+            border-color: rgba(76,175,80,0.25);
+            transform: translateY(-2px);
+        }
+        .feature-icon {
+            font-size: 1.6rem;
+            margin-bottom: 14px;
+        }
+        .feature h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .feature p {
+            font-size: 0.88rem;
+            color: var(--cream-dim);
+            line-height: 1.6;
+        }
+
+        /* ── Databases ────────────────────────── */
+        .databases {
+            padding: 80px 24px;
+            background: linear-gradient(180deg, transparent, rgba(13,31,13,0.2), transparent);
+        }
+        .databases h2 {
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .db-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px;
+            max-width: 860px;
+            margin: 0 auto;
+        }
+        .db-card {
+            background: var(--surface);
+            border: 1px solid rgba(76,175,80,0.08);
+            border-radius: 10px;
+            padding: 20px 16px;
+            text-align: center;
+        }
+        .db-count {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--green-bright);
+        }
+        .db-name {
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+        .db-desc {
+            font-size: 0.72rem;
+            color: var(--gray-light);
+            margin-top: 4px;
+        }
+
+        /* ── CTA ──────────────────────────────── */
+        .cta {
+            padding: 100px 24px;
+            text-align: center;
+        }
+        .cta h2 {
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: 16px;
+        }
+        .cta p {
+            font-size: 1rem;
+            color: var(--cream-dim);
+            max-width: 500px;
+            margin: 0 auto 36px;
+        }
+        .cta-code {
+            max-width: 560px;
+            margin: 0 auto 36px;
+        }
+
+        /* ── Footer ───────────────────────────── */
+        footer {
+            padding: 48px 24px 40px;
+            border-top: 1px solid rgba(76,175,80,0.08);
+            text-align: center;
+        }
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .footer-links a {
+            font-size: 0.85rem;
+            color: var(--cream-dim);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .footer-links a:hover { color: var(--green-bright); }
+        .footer-built {
+            font-size: 0.8rem;
+            color: var(--gray-mid);
+        }
+        .footer-built a {
+            color: var(--green-bright);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .footer-built a:hover { color: var(--green-light); }
+
+        /* ── Responsive ───────────────────────── */
+        @media (max-width: 640px) {
+            nav { padding: 12px 16px; }
+            .nav-links { gap: 16px; }
+            .hero { padding: 100px 16px 60px; }
+            .hero-stats { gap: 32px; }
+            .install-steps { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Nav -->
+    <nav>
+        <div class="nav-brand"><span>ghg</span>-calculator</div>
+        <div class="nav-links">
+            <a href="#install">Install</a>
+            <a href="#skill">Skill</a>
+            <a href="#features">Features</a>
+            <a href="https://github.com/gaiaaiagent/ghg-calculator" target="_blank" rel="noopener" class="btn-nav">GitHub</a>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-eyebrow">Open Source &bull; 967 Factors &bull; Zero API Costs</div>
+        <h1>Carbon intelligence<br>for <span class="gradient">every scope</span></h1>
+        <p>Calculate greenhouse gas emissions across Scope 1, 2, and 3 with 967 embedded emission factors from 6 peer-reviewed databases. CLI, MCP server, and Claude Code skill.</p>
+        <div class="hero-actions">
+            <a href="#install" class="btn btn-primary">Get Started</a>
+            <a href="https://github.com/gaiaaiagent/ghg-calculator" target="_blank" rel="noopener" class="btn btn-secondary">View on GitHub</a>
+        </div>
+        <div class="hero-stats">
+            <div class="stat">
+                <div class="stat-value">967</div>
+                <div class="stat-label">Emission Factors</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">6</div>
+                <div class="stat-label">Databases</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">120</div>
+                <div class="stat-label">Countries</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">92</div>
+                <div class="stat-label">Tests Passing</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Install -->
+    <section class="install" id="install">
+        <h2>Up and running in 60 seconds</h2>
+        <p class="lead">Three steps. No API keys, no accounts, no subscriptions.</p>
+        <div class="install-steps">
+            <div class="step">
+                <div class="step-number">01</div>
+                <h3>Clone and install</h3>
+                <p>Requires Python 3.11+ and uv.</p>
+                <div class="code-block">
+                    <span class="comment"># Clone the repo</span><br>
+                    <span class="cmd">git clone https://github.com/gaiaaiagent/ghg-calculator.git</span><br>
+                    <span class="cmd">cd ghg-calculator</span><br>
+                    <span class="cmd">uv sync</span>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">02</div>
+                <h3>Calculate emissions</h3>
+                <p>Run your first calculation from the CLI.</p>
+                <div class="code-block">
+                    <span class="comment"># 1,000 therms of natural gas</span><br>
+                    <span class="cmd">uv run ghg calculate \</span><br>
+                    <span class="cmd">&nbsp;&nbsp;--scope 1 \</span><br>
+                    <span class="cmd">&nbsp;&nbsp;--category stationary_combustion \</span><br>
+                    <span class="cmd">&nbsp;&nbsp;--fuel natural_gas \</span><br>
+                    <span class="cmd">&nbsp;&nbsp;--quantity 1000 --unit therm</span><br>
+                    <br>
+                    <span class="comment"># → 5,307 kg CO2e (5.3 tCO2e)</span>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">03</div>
+                <h3>Install the Claude skill</h3>
+                <p>Use natural language to analyze any scenario.</p>
+                <div class="code-block">
+                    <span class="comment"># Install globally</span><br>
+                    <span class="cmd">cp -r .claude/skills/ghg-analyze \</span><br>
+                    <span class="cmd">&nbsp;&nbsp;~/.claude/skills/</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skill -->
+    <section class="skill" id="skill">
+        <h2>One command. Full inventory.</h2>
+        <p class="lead">The <code style="color:var(--green-bright);font-family:'JetBrains Mono',monospace;font-size:0.95rem;">/ghg-analyze</code> skill researches real data, builds activity records, calculates across all scopes, and generates interactive reports.</p>
+        <div class="skill-demo">
+            <div class="skill-prompt">
+                <div class="cmd-line"><span class="cmd-slash">/ghg-analyze</span> <span class="cmd-text">hyperscaler data center buildout in Texas 2025</span></div>
+                <span class="cmd-desc">Researches Stargate, Meta, Google, Microsoft, AWS campuses — calculates 11.8 MtCO2e across ~3.8 GW</span>
+            </div>
+            <div class="skill-prompt">
+                <div class="cmd-line"><span class="cmd-slash">/ghg-analyze</span> <span class="cmd-text">my company's 200-truck diesel fleet in Ohio</span></div>
+                <span class="cmd-desc">Models fuel consumption, maintenance, tire wear — full Scope 1 + 3 inventory with fleet-level report</span>
+            </div>
+            <div class="skill-prompt">
+                <div class="cmd-line"><span class="cmd-slash">/ghg-analyze</span> <span class="cmd-text">Bitcoin mining operation 50MW in Iceland</span></div>
+                <span class="cmd-desc">Uses Ember factors for Iceland's grid (near-zero carbon), models cooling, equipment embodied carbon</span>
+            </div>
+            <div class="skill-prompt">
+                <div class="cmd-line"><span class="cmd-slash">/ghg-analyze</span> <span class="cmd-text">semiconductor fab construction in Arizona</span></div>
+                <span class="cmd-desc">Construction materials, process gases, AZNM grid electricity, supply chain spend-based estimates</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features" id="features">
+        <h2>Everything you need</h2>
+        <div class="features-grid">
+            <div class="feature">
+                <div class="feature-icon">&#9673;</div>
+                <h3>All 3 Scopes</h3>
+                <p>Scope 1 direct combustion and fugitive emissions. Scope 2 with dual location + market-based. All 15 Scope 3 categories.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">&#9672;</div>
+                <h3>Per-Gas Breakdown</h3>
+                <p>CO2, CH4, N2O calculated separately and converted via GWP (AR5/AR6). Full transparency on every calculation.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">&#9670;</div>
+                <h3>Interactive Reports</h3>
+                <p>Geographic maps, scope donuts, waterfall charts, treemaps, top sources — dark green/black theme with Plotly.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">&#8862;</div>
+                <h3>MCP Server</h3>
+                <p>8 tools for AI agent integration. Give any MCP-compatible client access to emissions calculations.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">&#9655;</div>
+                <h3>CLI</h3>
+                <p>6 commands: calculate, factors, gwp, convert, validate, report. Rich terminal output with formatted tables.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">&#9711;</div>
+                <h3>Offline &amp; Free</h3>
+                <p>All 967 factors embedded as versioned JSON. No API keys, no rate limits, no costs. MIT licensed.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Databases -->
+    <section class="databases">
+        <h2>967 factors from 6 databases</h2>
+        <div class="db-grid">
+            <div class="db-card">
+                <div class="db-count">113</div>
+                <div class="db-name">EPA Hub</div>
+                <div class="db-desc">US combustion + refrigerants</div>
+            </div>
+            <div class="db-card">
+                <div class="db-count">122</div>
+                <div class="db-name">eGRID</div>
+                <div class="db-desc">US electricity, 27 subregions</div>
+            </div>
+            <div class="db-card">
+                <div class="db-count">117</div>
+                <div class="db-name">DEFRA</div>
+                <div class="db-desc">UK/intl transport + materials</div>
+            </div>
+            <div class="db-card">
+                <div class="db-count">264</div>
+                <div class="db-name">USEEIO</div>
+                <div class="db-desc">US spend-based by NAICS</div>
+            </div>
+            <div class="db-card">
+                <div class="db-count">120</div>
+                <div class="db-name">Ember</div>
+                <div class="db-desc">120 countries electricity</div>
+            </div>
+            <div class="db-card">
+                <div class="db-count">231</div>
+                <div class="db-name">EXIOBASE</div>
+                <div class="db-desc">Multi-regional input-output</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta">
+        <h2>Start calculating</h2>
+        <p>Clone the repo, install the skill, and run your first emissions analysis in under a minute.</p>
+        <div class="cta-code">
+            <div class="code-block">
+                <span class="cmd">git clone https://github.com/gaiaaiagent/ghg-calculator.git && cd ghg-calculator && uv sync</span>
+            </div>
+        </div>
+        <div class="hero-actions">
+            <a href="https://github.com/gaiaaiagent/ghg-calculator" target="_blank" rel="noopener" class="btn btn-primary">View on GitHub</a>
+            <a href="https://x.com/reslashacc" target="_blank" rel="noopener" class="btn btn-secondary">Follow @reslashacc</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-links">
+            <a href="https://gaiaai.xyz" target="_blank" rel="noopener">gaiaai.xyz</a>
+            <a href="https://x.com/reslashacc" target="_blank" rel="noopener">@reslashacc</a>
+            <a href="https://github.com/gaiaaiagent/ghg-calculator" target="_blank" rel="noopener">GitHub</a>
+        </div>
+        <div class="footer-built">Built by <a href="https://gaiaai.xyz" target="_blank" rel="noopener">Gaia AI</a></div>
+    </footer>
+
+</body>
+</html>
