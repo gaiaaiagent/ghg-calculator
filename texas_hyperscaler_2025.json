@@ -1,0 +1,214 @@
+[
+  {
+    "id": "stargate_abilene_electricity",
+    "name": "Stargate Abilene - Grid Electricity (900 MW, ~80% avg utilization)",
+    "scope": "scope_2",
+    "quantity": 6307200000,
+    "unit": "kWh",
+    "grid_subregion": "ERCT",
+    "year": 2025,
+    "tags": {"project": "Stargate Abilene", "company": "OpenAI/Oracle/SoftBank", "note": "900MW × 0.80 PUE-adjusted × 8760h = 6.3 TWh"}
+  },
+  {
+    "id": "stargate_abilene_diesel_backup",
+    "name": "Stargate Abilene - Backup Diesel Generators (est. 200h runtime/yr)",
+    "scope": "scope_1",
+    "scope1_category": "stationary_combustion",
+    "fuel_type": "diesel",
+    "quantity": 2700000,
+    "unit": "gallon",
+    "year": 2025,
+    "tags": {"project": "Stargate Abilene", "note": "900MW backup, ~200h runtime, ~15 gal/MWh"}
+  },
+  {
+    "id": "stargate_abilene_refrigerant",
+    "name": "Stargate Abilene - Cooling System Refrigerant Losses",
+    "scope": "scope_1",
+    "scope1_category": "fugitive_emissions",
+    "quantity": 500,
+    "unit": "kg",
+    "refrigerant_type": "r-410a",
+    "year": 2025,
+    "tags": {"project": "Stargate Abilene", "note": "Estimated annual refrigerant leakage from cooling"}
+  },
+  {
+    "id": "stargate_expansion_electricity",
+    "name": "Stargate TX Expansion - Additional 600 MW (partial year, ~6mo online)",
+    "scope": "scope_2",
+    "quantity": 2102400000,
+    "unit": "kWh",
+    "grid_subregion": "ERCT",
+    "year": 2025,
+    "tags": {"project": "Stargate Expansion", "note": "600MW × 0.80 × 4380h (half year) = 2.1 TWh"}
+  },
+  {
+    "id": "meta_temple_electricity",
+    "name": "Meta Temple TX Campus - Grid Electricity (300 MW)",
+    "scope": "scope_2",
+    "quantity": 2102400000,
+    "unit": "kWh",
+    "grid_subregion": "ERCT",
+    "year": 2025,
+    "tags": {"project": "Meta Temple", "company": "Meta", "note": "300MW × 0.80 × 8760h = 2.1 TWh"}
+  },
+  {
+    "id": "meta_temple_diesel",
+    "name": "Meta Temple - Backup Diesel Generators",
+    "scope": "scope_1",
+    "scope1_category": "stationary_combustion",
+    "fuel_type": "diesel",
+    "quantity": 900000,
+    "unit": "gallon",
+    "tags": {"project": "Meta Temple"}
+  },
+  {
+    "id": "google_midlothian_electricity",
+    "name": "Google Midlothian TX - Grid Electricity (400 MW)",
+    "scope": "scope_2",
+    "quantity": 2803200000,
+    "unit": "kWh",
+    "grid_subregion": "ERCT",
+    "year": 2025,
+    "tags": {"project": "Google Midlothian", "company": "Google", "note": "400MW × 0.80 × 8760h = 2.8 TWh"}
+  },
+  {
+    "id": "google_midlothian_diesel",
+    "name": "Google Midlothian - Backup Diesel Generators",
+    "scope": "scope_1",
+    "scope1_category": "stationary_combustion",
+    "fuel_type": "diesel",
+    "quantity": 1200000,
+    "unit": "gallon",
+    "tags": {"project": "Google Midlothian"}
+  },
+  {
+    "id": "microsoft_san_antonio_electricity",
+    "name": "Microsoft San Antonio Campus - Grid Electricity (500 MW)",
+    "scope": "scope_2",
+    "quantity": 3504000000,
+    "unit": "kWh",
+    "grid_subregion": "ERCT",
+    "year": 2025,
+    "tags": {"project": "Microsoft SA", "company": "Microsoft", "note": "500MW × 0.80 × 8760h = 3.5 TWh"}
+  },
+  {
+    "id": "microsoft_san_antonio_diesel",
+    "name": "Microsoft San Antonio - Backup Diesel",
+    "scope": "scope_1",
+    "scope1_category": "stationary_combustion",
+    "fuel_type": "diesel",
+    "quantity": 1500000,
+    "unit": "gallon",
+    "tags": {"project": "Microsoft SA"}
+  },
+  {
+    "id": "aws_dfw_electricity",
+    "name": "AWS Dallas-Fort Worth Region - Grid Electricity (600 MW)",
+    "scope": "scope_2",
+    "quantity": 4204800000,
+    "unit": "kWh",
+    "grid_subregion": "ERCT",
+    "year": 2025,
+    "tags": {"project": "AWS DFW", "company": "Amazon", "note": "600MW × 0.80 × 8760h = 4.2 TWh"}
+  },
+  {
+    "id": "aws_dfw_diesel",
+    "name": "AWS DFW - Backup Diesel Generators",
+    "scope": "scope_1",
+    "scope1_category": "stationary_combustion",
+    "fuel_type": "diesel",
+    "quantity": 1800000,
+    "unit": "gallon",
+    "tags": {"project": "AWS DFW"}
+  },
+  {
+    "id": "aws_dfw_natural_gas",
+    "name": "AWS DFW - On-site Natural Gas Generators",
+    "scope": "scope_1",
+    "scope1_category": "stationary_combustion",
+    "fuel_type": "natural_gas",
+    "quantity": 500000,
+    "unit": "therm",
+    "tags": {"project": "AWS DFW", "note": "On-site gas turbines for peak/reliability"}
+  },
+  {
+    "id": "stream_sa_electricity",
+    "name": "Stream Data Centers San Antonio Campus (200 MW)",
+    "scope": "scope_2",
+    "quantity": 1401600000,
+    "unit": "kWh",
+    "grid_subregion": "ERCT",
+    "year": 2025,
+    "tags": {"project": "Stream SA", "company": "Stream Data Centers"}
+  },
+  {
+    "id": "qts_dfw_electricity",
+    "name": "QTS/Digital Realty DFW Expansion (300 MW)",
+    "scope": "scope_2",
+    "quantity": 2102400000,
+    "unit": "kWh",
+    "grid_subregion": "ERCT",
+    "year": 2025,
+    "tags": {"project": "QTS DFW", "company": "QTS/Digital Realty"}
+  },
+  {
+    "id": "construction_embodied_steel",
+    "name": "Embodied Emissions - Structural Steel (all TX projects)",
+    "scope": "scope_3",
+    "scope3_category": 1,
+    "quantity": 200000000,
+    "unit": "USD",
+    "custom_factor": 1.778,
+    "tags": {"note": "~150,000 tonnes steel across all campuses, estimated at $200M spend, 1.778 kg CO2e/kg"}
+  },
+  {
+    "id": "construction_concrete",
+    "name": "Embodied Emissions - Concrete (all TX projects)",
+    "scope": "scope_3",
+    "scope3_category": 1,
+    "quantity": 500000,
+    "unit": "tonne",
+    "custom_factor": 132,
+    "tags": {"note": "~500,000 tonnes concrete at 0.132 kg CO2e/kg = 132 kg CO2e/tonne"}
+  },
+  {
+    "id": "construction_equipment",
+    "name": "Construction Equipment Diesel (all TX sites, 2025)",
+    "scope": "scope_1",
+    "scope1_category": "stationary_combustion",
+    "fuel_type": "diesel",
+    "quantity": 5000000,
+    "unit": "gallon",
+    "tags": {"note": "Heavy construction across ~10 campuses, cranes, excavators, generators"}
+  },
+  {
+    "id": "it_equipment_manufacturing",
+    "name": "IT Equipment Manufacturing (servers, GPUs, networking)",
+    "scope": "scope_3",
+    "scope3_category": 1,
+    "quantity": 15000000000,
+    "unit": "USD",
+    "custom_factor": 0.15,
+    "tags": {"note": "$15B in server/GPU purchases at ~0.15 kg CO2e/USD (electronics manufacturing)"}
+  },
+  {
+    "id": "worker_commuting",
+    "name": "Construction & Operations Worker Commuting",
+    "scope": "scope_3",
+    "scope3_category": 7,
+    "quantity": 50000,
+    "unit": "USD",
+    "custom_factor": 0.35,
+    "tags": {"note": "~15,000 workers across all sites"}
+  },
+  {
+    "id": "business_travel",
+    "name": "Business Travel (project management, site visits)",
+    "scope": "scope_3",
+    "scope3_category": 6,
+    "quantity": 10000000,
+    "unit": "USD",
+    "custom_factor": 0.25,
+    "tags": {"note": "Executive/engineering travel across all hyperscaler projects"}
+  }
+]

@@ -1,0 +1,8 @@
+[
+  {"scope": "scope_1", "scope1_category": "stationary_combustion", "fuel_type": "natural_gas", "quantity": 5000, "unit": "therm", "name": "Office Heating"},
+  {"scope": "scope_1", "scope1_category": "mobile_combustion", "fuel_type": "gasoline", "quantity": 2000, "unit": "gallon", "name": "Fleet Vehicles"},
+  {"scope": "scope_1", "scope1_category": "fugitive_emissions", "quantity": 5, "unit": "kg", "refrigerant_type": "r-410a", "name": "AC Refrigerant Leak"},
+  {"scope": "scope_2", "quantity": 200000, "unit": "kWh", "grid_subregion": "RFCE", "name": "Office Electricity"},
+  {"scope": "scope_3", "scope3_category": 6, "quantity": 50000, "unit": "USD", "custom_factor": 0.25, "name": "Business Travel"},
+  {"scope": "scope_3", "scope3_category": 1, "quantity": 500000, "unit": "USD", "custom_factor": 0.4, "name": "Purchased Goods"}
+]
